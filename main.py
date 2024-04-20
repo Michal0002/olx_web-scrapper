@@ -118,9 +118,10 @@ provinces_list.insert(0,"Wszystkie")
 
 provinces_label = ttk.Label(root, text="Wybierz województwo:", font=("Times New Roman", 10))
 provinces_label.pack()
-provinces_combobox = ttk.Combobox(root, values = provinces_list, state='readonly')
+
+provinces_combobox = ttk.Combobox(root, values = provinces_list, state='readonly', font=('Helvetica', 12))
 provinces_combobox.current(0)
-provinces_combobox.pack()
+provinces_combobox.pack(pady=10)
 
 table = ttk.Treeview(root, columns=('Tytuł', 'Miasto', 'Wynagrodzenie', 'Link'), show='headings')
 table.heading('Tytuł', text='Tytuł')
@@ -131,20 +132,20 @@ table.pack(expand=True, fill='both')
 table.column('Link', width=0, stretch=False)
 
 #click_event 
-table.tag_configure('link',)
+table.tag_configure('link', font=('Helvetica', 10,))
 table.bind('<Double-1>', link_click)
 
-fetch_button = tk.Button(root, text="Pobierz oferty pracy", command=fetch_data)
-fetch_button.pack()
+fetch_button = tk.Button(root, text="Pobierz oferty pracy", command=fetch_data, bg='#4CAF50', fg='white', font=('Helvetica', 12))
+fetch_button.pack(pady=10)
 
-analysis_button = tk.Button(root, text="Analizuj słowa kluczowe", command=analyze_keywords)
-analysis_button.pack()
+analysis_button = tk.Button(root, text="Analizuj słowa kluczowe", command=analyze_keywords, bg='#FFA500', fg='white', font=('Helvetica', 12))
+analysis_button.pack(pady=10)
 
-job_counter_label = tk.Label(root, text="")
-job_counter_label.pack()
+job_counter_label = tk.Label(root, text="", font=('Helvetica', 12))
+job_counter_label.pack(pady=5)
 
-keyword_label = tk.Label(root, text="")
-keyword_label.pack()
+keyword_label = tk.Label(root, text="", font=('Helvetica', 12))
+keyword_label.pack(pady=5)
 
 root.mainloop()
 
