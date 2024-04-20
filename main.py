@@ -14,33 +14,44 @@ urls = [
 provinces_file = "data/provinces.txt"
 provinces = {}
 
-with open(provinces_file, 'r', encoding='utf-8') as file:
-    for line in file:
-        key, value = line.strip().split(':')
-        provinces[key] = value
+try:
+    with open(provinces_file, 'r', encoding='utf-8') as file:
+        for line in file:
+            key, value = line.strip().split(':')
+            provinces[key] = value
+except FileNotFoundError:
+    print("Nie można odnaleźć pliku z województwami.")
 
 def get_job_offers(url):
-    response = requests.get(url)
-    html_content = response.text
-    soup = BeautifulSoup(html_content, 'html.parser')
-    offers = soup.find_all('div', class_='css-1sw7q4x')
-    job_data = []
-    for offer in offers:
-        title_element = offer.find('h6', class_='css-1b96xlq')
-        link_element = offer.find('a', class_='css-13gxtrp')
-        city_element = offer.find('span', class_='css-d5w927')
-        contract_element = offer.find('p', class_='css-1jnbm5x')
-        # date_element = offer.find('p', class_='css-l3c9zc')
-        if title_element and link_element and city_element and contract_element:
-            title = title_element.text.strip()
-            link = link_element['href']
-            city = city_element.text.strip()
-            contract = contract_element.text.strip()
-            # date = date_element.text.strip()
-            # if "dzisiaj" in date.lower():
-            #     date = datetime.now().strftime('%d %B %Y')
-            job_data.append({'title': title, 'link': link, 'city': city, 'contract': contract})
-    return job_data
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        html_content = response.text
+        soup = BeautifulSoup(html_content, 'html.parser')
+        offers = soup.find_all('div', class_='css-1sw7q4x')
+        job_data = []
+
+        for offer in offers:
+            title_element = offer.find('h6', class_='css-1b96xlq')
+            link_element = offer.find('a', class_='css-13gxtrp')
+            city_element = offer.find('span', class_='css-d5w927')
+            contract_element = offer.find('p', class_='css-1jnbm5x')
+            # date_element = offer.find('p', class_='css-l3c9zc')
+            if title_element and link_element and city_element and contract_element:
+                title = title_element.text.strip()
+                link = link_element['href']
+                city = city_element.text.strip()
+                contract = contract_element.text.strip()
+                # date = date_element.text.strip()
+                # if "dzisiaj" in date.lower():
+                #     date = datetime.now().strftime('%d %B %Y')
+                job_data.append({'title': title, 'link': link, 'city': city, 'contract': contract})
+        return job_data
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Wystąpił problem z pobraniem strony: {e}")
+        return[] 
 
 def get_all_job_offers(urls):
     all_job_offers = []
@@ -82,7 +93,6 @@ def analyze_keywords():
         city = offer['city']
         black_words = ["praca", "zdalnie", "zaraz", "zatrudnię", "klienta", "zatrudnimy", "zatrudni"]
         for word in title.split():
-            word.lower()
             if len(word) > 4 and word not in black_words:
                 keywords[word] = keywords.get(word, 0) + 1
 
