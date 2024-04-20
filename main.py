@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import requests
 from bs4 import BeautifulSoup
+import webbrowser
 
 urls = [
     'https://www.olx.pl/praca',
@@ -61,6 +62,15 @@ def fetch_data():
         # Wstawienie danych ofert pracy do tabeli, pomijając kolumnę "Link"
         table.insert('', 'end', values=(offer['title'], offer['city'], offer['contract'], f'https://www.olx.pl{offer['link']}'), tags=('link',))
 
+def link_click(event):
+    selected_element = table.selection()
+    if selected_element:
+        item = table.selection()[0]
+        link = table.item(item, 'values')[3]
+        webbrowser.open_new_tab(link)
+    else:
+        print("Something went wrong.")
+        pass
 
 root = tk.Tk()
 root.title("Michal Kasperek - olx web-scrap")
@@ -74,13 +84,17 @@ provinces_combobox = ttk.Combobox(root, values = provinces_list, state='readonly
 provinces_combobox.current(0)
 provinces_combobox.pack()
 
-table = ttk.Treeview(root, columns=('Data dodania', 'Tytuł', 'Miasto', 'Wynagrodzenie', 'Link'), show='headings')
-table.heading('Data dodania', text='Data dodania')
+table = ttk.Treeview(root, columns=('Tytuł', 'Miasto', 'Wynagrodzenie', 'Link'), show='headings')
 table.heading('Tytuł', text='Tytuł')
 table.heading('Miasto', text='Miasto')
 table.heading('Wynagrodzenie', text='Wynagrodzenie')
 table.heading('Link', text='Link')
 table.pack(expand=True, fill='both')
+table.column('Link', width=0, stretch=False)
+
+#click_event 
+table.tag_configure('link',)
+table.bind('<Double-1>', link_click)
 
 fetch_button = tk.Button(root, text="Pobierz oferty pracy", command=fetch_data)
 fetch_button.pack()
