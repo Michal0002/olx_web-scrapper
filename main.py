@@ -3,6 +3,7 @@ from tkinter import ttk
 import requests
 from bs4 import BeautifulSoup
 import webbrowser
+import sys
 
 urls = [
     'https://www.olx.pl/praca',
@@ -12,7 +13,7 @@ urls = [
 ]
 
 provinces_file = "data/provinces.txt"
-provinces = {}
+provinces = {} 
 
 try:
     with open(provinces_file, 'r', encoding='utf-8') as file:
@@ -21,6 +22,7 @@ try:
             provinces[key] = value
 except FileNotFoundError:
     print("Nie można odnaleźć pliku z województwami.")
+    sys.exit(1)
 
 def get_job_offers(url):
     try:
@@ -66,7 +68,7 @@ def fetch_data():
     if selected_province == 'Wszystkie':
         filtered_urls = urls
     elif selected_province != 'Wszystkie':   
-        filtered_urls = [f"https://www.olx.pl/praca/{provinces[selected_province]}/"]
+        filtered_urls = [url.replace('praca', f'praca/{provinces[selected_province]}') for url in urls]
     job_offers = get_all_job_offers(filtered_urls)
     table.delete(*table.get_children())
     for i, offer in enumerate(job_offers):
