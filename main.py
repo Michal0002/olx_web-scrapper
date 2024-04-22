@@ -70,9 +70,8 @@ def fetch_data():
     elif selected_province != 'Wszystkie':   
         filtered_urls = [url.replace('praca', f'praca/{provinces[selected_province]}') for url in urls]
     job_offers = get_all_job_offers(filtered_urls)
-    table.delete(*table.get_children())
+    table.delete(*table.get_children()) 
     for i, offer in enumerate(job_offers):
-        # Wstawienie danych ofert pracy do tabeli, pomijając kolumnę "Link"
         table.insert('', 'end', values=(offer['title'], offer['city'], offer['contract'], f'https://www.olx.pl{offer['link']}'), tags=('link',))
     job_counter_label.config(text=f'Liczba ofert: {len(job_offers)} \n Województwo: {selected_province}')
     
@@ -100,26 +99,28 @@ def analyze_keywords():
 
         province = city.split(', ')[0].strip()
         provinces_counter[province] = provinces_counter.get(province, 0) + 1
-
-    sorted_keywords = sorted(keywords.items(), key=lambda x: x[1], reverse=True)
+    sorted_keywords = sorted(keywords.items(), key=lambda x: x[1], reverse=True) #zwraca drugi element słownika czyli indeks [1], desc - od największej do najmniejszej 
 
     with open("data/analyze.txt", "w", encoding="UTF-8") as file:
         file.write("Top 5 słów kluczowych: \n")
         for word, freq in sorted_keywords[:5]:
             file.write(f"{word}: {freq}\n")
+
         file.write("\nTop 5 miast:\n")
         top_5_cities = sorted(provinces_counter.items(), key=lambda x: x[1], reverse=True)[:5]
         for city, freq in top_5_cities:
             file.write(f"{city}: {freq}\n")
+
         file.write("\nDane dotyczące miast:\n")
         for city, freq in provinces_counter.items():
             file.write(f"{city}: {freq}\n")
+
         file.write("\nDane dotyczące słów kluczowych:\n")
         for word, count in sorted_keywords:
             file.write(f"{word}: {count}\n")
 
     keyword_label.config(text="Analiza zakończona. Wyniki zapisano do pliku data.txt")
-    root.after(4000, lambda: keyword_label.config(text=""))
+    root.after(4000, lambda: keyword_label.config(text="")) 
 
 
 root = tk.Tk()
